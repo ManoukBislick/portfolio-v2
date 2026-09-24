@@ -1,1 +1,220 @@
-@import 'https://a.storyblok.com/f/212319/x/e6ccda03b8/blueprint-blank.css';
+@import 'tailwindcss';
+@plugin '@tailwindcss/typography';
+
+/* ---------------------------------------------------------------
+ * Design tokens
+ * Calm, light and green: cream paper, sage leaves, deep forest ink.
+ * ------------------------------------------------------------- */
+@theme {
+	--font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+	--font-serif: var(--font-cormorant), 'Iowan Old Style', Georgia, serif;
+
+	--color-cream-50: #fcfbf6;
+	--color-cream-100: #f7f4ea;
+	--color-cream-200: #efeadb;
+	--color-cream-300: #e3dcc5;
+
+	--color-sage-50: #f1f5ee;
+	--color-sage-100: #e3ebdd;
+	--color-sage-200: #cadac1;
+	--color-sage-300: #aac29f;
+	--color-sage-400: #88a67c;
+	--color-sage-500: #6a8b5f;
+	--color-sage-600: #54714b;
+	--color-sage-700: #42593c;
+	--color-sage-800: #334631;
+	--color-sage-900: #253427;
+	--color-sage-950: #162019;
+
+	--color-blush-100: #f6e9df;
+	--color-blush-200: #eed5c4;
+	--color-blush-300: #e2bba3;
+	--color-clay-600: #9b4d3b;
+
+	--text-display: clamp(2.9rem, 1.5rem + 5vw, 6.25rem);
+	--text-display--line-height: 0.98;
+	--text-title: clamp(2.25rem, 1.5rem + 3vw, 4.25rem);
+	--text-title--line-height: 1.04;
+
+	--radius-arch: 999px 999px 1.5rem 1.5rem;
+
+	--ease-calm: cubic-bezier(0.22, 1, 0.36, 1);
+
+	--animate-breathe: breathe 3.2s ease-in-out infinite;
+
+	@keyframes breathe {
+		0%,
+		100% {
+			transform: scale(1);
+			opacity: 1;
+		}
+		50% {
+			transform: scale(1.6);
+			opacity: 0;
+		}
+	}
+}
+
+/* ---------------------------------------------------------------
+ * Base
+ * ------------------------------------------------------------- */
+@layer base {
+	html {
+		scroll-behavior: smooth;
+		-webkit-tap-highlight-color: transparent;
+	}
+
+	body {
+		@apply bg-cream-50 font-sans text-[1.0625rem] leading-relaxed font-light text-sage-900 antialiased;
+		text-rendering: optimizeLegibility;
+	}
+
+	::selection {
+		@apply bg-sage-200 text-sage-950;
+	}
+
+	h1,
+	h2,
+	h3,
+	h4 {
+		@apply font-serif font-normal tracking-tight text-sage-950;
+		text-wrap: balance;
+	}
+
+	p {
+		text-wrap: pretty;
+	}
+
+	em {
+		@apply font-serif italic;
+	}
+
+	:focus-visible {
+		@apply rounded-sm outline-2 outline-offset-4 outline-sage-500;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		html {
+			scroll-behavior: auto;
+		}
+	}
+}
+
+/* ---------------------------------------------------------------
+ * Utilities
+ * ------------------------------------------------------------- */
+@utility container-page {
+	@apply mx-auto w-full max-w-7xl px-5 sm:px-8 lg:px-12;
+}
+
+@utility container-narrow {
+	@apply mx-auto w-full max-w-3xl px-5 sm:px-8;
+}
+
+@utility rounded-arch {
+	border-radius: var(--radius-arch);
+}
+
+/* Soft paper grain on top of everything — subtle, never in the way. */
+@utility grain {
+	&::after {
+		content: '';
+		position: fixed;
+		inset: 0;
+		z-index: 60;
+		pointer-events: none;
+		opacity: 0.06;
+		mix-blend-mode: multiply;
+		background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+	}
+}
+
+/* Underline that grows from the left on hover. */
+@utility link-underline {
+	background-image: linear-gradient(currentColor, currentColor);
+	background-size: 0% 1px;
+	background-position: 0 100%;
+	background-repeat: no-repeat;
+	transition: background-size 0.5s var(--ease-calm);
+
+	&:hover,
+	&:focus-visible,
+	&[aria-current='page'] {
+		background-size: 100% 1px;
+	}
+}
+
+/* ---------------------------------------------------------------
+ * Animation guards
+ * `js-anim` is set by an inline script in <head> when motion is allowed,
+ * so content never flashes before GSAP takes over. If GSAP fails to boot,
+ * the same script removes the class and everything stays visible.
+ * ------------------------------------------------------------- */
+.js-anim [data-reveal],
+.js-anim [data-split] {
+	visibility: hidden;
+}
+
+.js-anim [data-page] {
+	opacity: 0;
+}
+
+/* SplitText line masks */
+.split-line {
+	overflow: clip;
+	padding-bottom: 0.08em;
+	margin-bottom: -0.08em;
+}
+
+/* Long-form typography for articles and project write-ups */
+@utility prose-calm {
+	@apply prose prose-lg max-w-none font-light;
+	--tw-prose-body: var(--color-sage-800);
+	--tw-prose-headings: var(--color-sage-950);
+	--tw-prose-lead: var(--color-sage-700);
+	--tw-prose-links: var(--color-sage-700);
+	--tw-prose-bold: var(--color-sage-950);
+	--tw-prose-counters: var(--color-sage-500);
+	--tw-prose-bullets: var(--color-sage-400);
+	--tw-prose-hr: var(--color-sage-200);
+	--tw-prose-quotes: var(--color-sage-900);
+	--tw-prose-quote-borders: var(--color-sage-300);
+	--tw-prose-captions: var(--color-sage-600);
+	--tw-prose-code: var(--color-sage-900);
+	--tw-prose-pre-code: var(--color-cream-100);
+	--tw-prose-pre-bg: var(--color-sage-950);
+	--tw-prose-th-borders: var(--color-sage-200);
+	--tw-prose-td-borders: var(--color-sage-100);
+
+	& :where(h2, h3, h4) {
+		@apply font-serif font-normal tracking-tight;
+	}
+
+	& :where(h2) {
+		@apply text-4xl;
+	}
+
+	& :where(h3) {
+		@apply text-3xl;
+	}
+
+	& :where(a) {
+		@apply font-normal underline decoration-sage-300 underline-offset-4 transition-colors hover:decoration-sage-600;
+	}
+
+	& :where(blockquote) {
+		@apply font-serif text-2xl font-normal not-italic;
+	}
+
+	& :where(code):not(:where(pre code)) {
+		@apply rounded-md bg-sage-100 px-1.5 py-0.5 font-normal before:content-none after:content-none;
+	}
+
+	& :where(pre) {
+		@apply rounded-2xl text-sm leading-relaxed;
+	}
+
+	& :where(img) {
+		@apply rounded-2xl;
+	}
+}

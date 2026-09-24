@@ -1,11 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-	// The following environment variables can be safely exposed to the public bundle.
-	// The Storyblok public access token is required for features like live preview.
-	env: {
-		STORYBLOK_DELIVERY_API_TOKEN: process.env.STORYBLOK_DELIVERY_API_TOKEN,
-		STORYBLOK_API_BASE_URL: process.env.STORYBLOK_API_BASE_URL,
-		STORYBLOK_REGION: process.env.STORYBLOK_REGION,
+	// Storyblok tokens are only read on the server (see src/lib/storyblok.js),
+	// so they are no longer exposed to the browser bundle.
+	images: {
+		remotePatterns: [
+			{ protocol: 'https', hostname: 'a.storyblok.com' },
+			{ protocol: 'https', hostname: 'a-us.storyblok.com' },
+			{ protocol: 'https', hostname: 'a-ca.storyblok.com' },
+			{ protocol: 'https', hostname: 'a-ap.storyblok.com' },
+		],
 	},
 };
 

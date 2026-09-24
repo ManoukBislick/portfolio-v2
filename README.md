@@ -1,78 +1,115 @@
+# Manouk Bislick — Portfolio v2
 
-# Storyblok Core Space Blueprint: Next.js
+A calm, green portfolio built with **Next.js (App Router)**, **Storyblok**, **Tailwind CSS v4** and **GSAP**, hosted on **Vercel**.
 
-Integrate [Next.js](https://nextjs.org/) with [Storyblok](http://www.storyblok.com) as a headless CMS.
+- Pages: Home, About, Projects (+ case studies), Blog (+ articles), Contact
+- Every section is a Storyblok block — rearrange pages without touching code
+- Atomic design system with reusable components
+- Gentle animations that switch off automatically for `prefers-reduced-motion`
+- Works without Storyblok too: placeholder content is built in, so `npm run dev` always shows a complete site
 
-This blueprint is ideal for kickstarting new Storyblok and Next.js projects. What's inside:
-- Pre-configured default blocks: `page`, `teaser`, `grid`, and `feature`.
-- Support for the Visual Editor's live preview.
-- Dynamic routing to fetch and render new stories automatically.
-- Minimal styling.
-
-> [!TIP]
-> Follow our [Next.js guide](https://www.storyblok.com/docs/guides/nextjs/) for a step-by-step walkthrough and learn more about Storyblok's range of features, including rich text rendering, custom content modeling, and internationalization. See the [@storyblok/react package reference](https://storyblok.com/docs/packages/storyblok-react) for further information.
-
-***
-
-[![Open in GitHub Codespaces](https://img.shields.io/badge/Open%20in%20GitHub%20Codespaces-dad4ff.svg?style=for-the-badge&logo=GitHub&logoColor=181717&labelColor=ffffff&color=dad4ff)](https://github.com/codespaces/new?skip_quickstart=true&machine=basicLinux32gb&repo=962644002&ref=main&geo=EuropeWest)
-[![Try Storyblok free](https://img.shields.io/badge/Try%20Storyblok-dad4ff.svg?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgZmlsbD0ibm9uZSI+PHBhdGggZD0iTTQuNzA3IDIuNTM4aDIyLjUyOXYyMy41ODdINC43MDd6IiBzdHlsZT0iZmlsbDojZmZmIi8+PHBhdGggZmlsbD0iIzFmMWYxZiIgZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNMS43NDMgMi42MDFBMi41OTcgMi41OTcgMCAwIDEgNC4zMzUgMGgyMy4zM2EyLjU5NyAyLjU5NyAwIDAgMSAyLjU5MiAyLjYwMXYyMy40MTFhMi41OTcgMi41OTcgMCAwIDEtMi41OTIgMi42MDJIMTIuNTQ4bC0zLjg3MiAzLjIwOGEuNzcuNzcgMCAwIDEtMS4yNjEtLjU5N3YtMi42MTFoLTMuMDhhMi41OTcgMi41OTcgMCAwIDEtMi41OTItMi42MDJabTUuNjcgMi4xMjdoMTIuNDYyYzIuNjkxIDAgNC44NzMgMi4xOSA0Ljg3MyA0Ljg5IDAgMi4xNjQtMS40IDQtMy4zNDIgNC42NDRhNC44ODcgNC44ODcgMCAwIDEgMy45OSA0LjgxYzAgMi43MDEtMi4xODEgNC44OS00Ljg3MyA0Ljg5SDcuNDEzdi05LjQ1NFptMTAuMzY0IDQuNEgxMS45NXYyLjkzNGg1LjgyOGMuODA4IDAgMS40NjItLjY1NiAxLjQ2Mi0xLjQ2NyAwLS44MS0uNjU0LTEuNDY3LTEuNDYyLTEuNDY3em0tNS44MjggNi41Mmg2LjMxNGMuODk3IDAgMS42MjQuNzMgMS42MjQgMS42MyAwIC45MDEtLjcyNyAxLjYzLTEuNjI0IDEuNjNoLTYuMzE0eiIgY2xpcC1ydWxlPSJldmVub2RkIiBzdHlsZT0ic3Ryb2tlLXdpZHRoOjEuNTE3NzUiLz48L3N2Zz4K&labelColor=ffffff)](https://app.storyblok.com/#/signup)
-[![Join the Storyblok Discord community](https://img.shields.io/discord/700316478792138842?style=for-the-badge&logo=discord&label=Join%20our%20community&labelColor=ffffff&color=dad4ff)](https://storyblok.com/join-discord)
-
-## Get Started
-
-**No Storyblok account yet? [Sign up now](https://app.storyblok.com/#/signup?utm_source=docs) to experience a 14-day free trial of all features and enjoy our completely free Starter plan.**
-
-1. Create an empty new Storyblok space
-2. Create a new repository based on this template
-3. Open the project on your device
-4. Install dependencies
+## Quick start
 
 ```sh
 npm install
+cp .env.example .env.local   # fill in at least STORYBLOK_DELIVERY_API_TOKEN
+npm run dev                  # https://localhost:3000 (HTTPS for the Visual Editor)
 ```
 
-### Authentication
+Without a Storyblok token the site renders the placeholder content from `src/data/fallback` and the Markdown drafts in `content/blog`.
 
-In the root of the project, create a `.env` file to store the Storyblok access token:
+## Project structure
+
+```
+src/
+  app/                    routes (App Router) + server action for the contact form
+  components/
+    atoms/                Button, Heading, Text, Tag, Icon, Input, SbImage …
+    molecules/            ProjectCard, ArticleCard, TimelineItem, FormField …
+    organisms/            Hero, Timeline, Skills, ProjectGrid, ContactForm, SiteHeader …
+    templates/            ProjectTemplate, ArticleTemplate
+    animations/           GSAP building blocks: Reveal, SplitReveal, ImageReveal,
+                          Parallax, Float, Magnetic, BotanicalLine, CountUp …
+    bloks/                Storyblok adapters: map blok data → organism props
+  lib/                    Storyblok client, data fetching, helpers
+  data/fallback/          placeholder content (same shape as Storyblok)
+content/blog/             monthly article drafts in Markdown + topic ideas
+scripts/                  Storyblok setup and blog-draft scripts
+```
+
+**Atoms → molecules → organisms → templates** never import Storyblok. The `bloks/` layer is the only place that knows about the CMS, which keeps the design system reusable.
+
+### Design tokens
+
+Defined in `src/app/globals.css` (`@theme`): `cream`, `sage` (green scale) and `blush` colours, Poppins (`font-sans`) + Cormorant Garamond (`font-serif`, self-hosted in `src/fonts`), fluid `text-display` / `text-title` sizes and the `rounded-arch` shape.
+
+In any heading field in Storyblok you can write `I build *calm* websites` — the words between asterisks become an italic green accent.
+
+## Storyblok
+
+### 1. Push the content model and placeholder content
+
+Create a personal access token (Storyblok → My account → Personal access tokens), add it and your space ID to `.env.local`, then run:
 
 ```sh
-STORYBLOK_DELIVERY_API_TOKEN=<REPLACE_WITH_YOUR_TOKEN>
+npm run storyblok:setup              # components + placeholder pages/projects/article
+npm run storyblok:setup -- --dry-run # preview first
+npm run storyblok:setup -- --components  # only update the components
 ```
 
-> [!IMPORTANT]
-> Copy your space's preview access token from **Settings** > **Access Tokens**.
-> Learn more about Storyblok [access tokens](https://www.storyblok.com/docs/concepts/access-tokens).
+This creates all blocks (grouped as _Content types_, _Sections_ and _Items_), the pages `home`, `about`, `contact`, the folders `projects/` and `blog/` with their overview pages, sample projects (as drafts) and the first blog article (as a draft). Existing stories are left alone unless you pass `--force` — except the blueprint's original `home` story, which is replaced.
 
-### Connect the Visual Editor
+### 2. Content types
 
-To render a preview of the local project in the Visual Editor, follow these steps:
+| Content type | Where                                            | Rendered at        |
+| ------------ | ------------------------------------------------ | ------------------ |
+| `page`       | `home`, `about`, `contact`, `projects/`, `blog/` | `/`, `/about`, …   |
+| `project`    | `projects/<slug>`                                | `/projects/<slug>` |
+| `article`    | `blog/<slug>`                                    | `/blog/<slug>`     |
 
-1. Navigate to **Settings > Visual Editor**.
-2. Set the default environment to `https://localhost:3000/`.
-3. Save.
-4. Open the `home` story.
-5. Click **Config**.
-6. Type `/` in the **Real path**.
+Section blocks: `hero`, `page_hero`, `marquee`, `pillars`, `text_image`, `facts`, `timeline`, `skills`, `featured_projects`, `project_grid`, `article_index`, `latest_articles`, `rich_text`, `cta`, `contact_section`.
 
-Run the development server with HTTPS enabled:
-```sh
-npx next dev --experimental-https
+### 3. Visual Editor
+
+- **Local:** Settings → Visual Editor → `https://localhost:3000/` (draft content is always used in `npm run dev`).
+- **Production:** add a preview URL `https://<your-domain>/api/draft?secret=<STORYBLOK_PREVIEW_SECRET>&slug=` — it enables Next.js Draft Mode and forwards the editor parameters.
+- The `home` story's _Real path_ is `/`.
+
+### 4. Publishing & caching
+
+Pages are statically generated and refreshed every hour. For instant updates, add a webhook in Storyblok (Settings → Webhooks → _Story published & unpublished_):
+
+```
+https://<your-domain>/api/revalidate?secret=<STORYBLOK_WEBHOOK_SECRET>
 ```
 
-> [!IMPORTANT]
-> To connect the Storyblok Visual Editor, the local project must run over HTTPS. Learn more in the [Visual Editor concept](https://www.storyblok.com/docs/concepts/visual-editor#local-development-via-https).
+## Blog — one article a month
 
-Back in Storyblok, open the **Home** story to start editing.
+1. At the start of every month a scheduled Claude task writes a new article (AI, Next.js, React or Storyblok) to `content/blog/YYYY-MM-slug.md` and reminds you.
+2. Get it into Storyblok as a **draft**, either:
+   - `npm run blog:push` from your own terminal, or
+   - commit & push the file — a GitHub Action creates the draft. To enable it, move `scripts/blog/github-workflow-blog-drafts.yml` to `.github/workflows/blog-drafts.yml` and add the `STORYBLOK_MANAGEMENT_TOKEN` secret and `STORYBLOK_SPACE_ID` variable in GitHub.
+3. Review, add a cover image and publish in Storyblok.
 
-Happy building!
+Topic ideas live in [`content/blog/IDEAS.md`](content/blog/IDEAS.md).
 
-## Resources
+## Contact form
 
-- To learn more about what you can do with Storyblok, visit [our documentation and learning hub](https://www.storyblok.com/docs).
-- To learn more about the integration between Storyblok and Next.js, check our [dedicated developer tutorials](https://www.storyblok.com/tutorials?technologies=next).
-- To learn more about Next.js, check the [official documentation](https://nextjs.org/docs).
+`src/app/contact/actions.js` is a Server Action that validates the form, filters bots (honeypot + minimum fill time) and sends the message with [Resend](https://resend.com). Set `RESEND_API_KEY`, `CONTACT_TO_EMAIL` and `CONTACT_FROM_EMAIL` (a sender on a domain verified in Resend). In development without a key, messages are logged to the terminal instead.
 
-### Support
+## Environment variables on Vercel
 
-- Have questions, need help, want to chat with other users? [Join our Discord community](https://storyblok.com/join-discord).
-- Visit the Storyblok [Help Center](https://support.storyblok.com/hc/en-us).
+`STORYBLOK_DELIVERY_API_TOKEN`, `STORYBLOK_REGION`, `STORYBLOK_PREVIEW_SECRET`, `STORYBLOK_WEBHOOK_SECRET`, `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_CONTACT_EMAIL`, `RESEND_API_KEY`, `CONTACT_TO_EMAIL`, `CONTACT_FROM_EMAIL`.
+
+Never add `STORYBLOK_MANAGEMENT_TOKEN` to Vercel — it's only for the local scripts and the GitHub Action.
+
+## Scripts
+
+| Command                   | What it does                                |
+| ------------------------- | ------------------------------------------- |
+| `npm run dev`             | Dev server over HTTPS                       |
+| `npm run build` / `start` | Production build / server                   |
+| `npm run lint`            | ESLint (Next.js config)                     |
+| `npm run format`          | Prettier                                    |
+| `npm run storyblok:setup` | Push components + placeholder content       |
+| `npm run blog:push`       | Create Storyblok drafts from `content/blog` |
