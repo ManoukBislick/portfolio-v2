@@ -1,26 +1,25 @@
 import { notFound } from 'next/navigation';
+import { getProjectStories, getStory, toProject } from '@/lib/content';
+import { pageMetadata } from '@/lib/metadata';
 import StoryRenderer from '@/components/bloks/StoryRenderer';
-import {
-	getProjectStories,
-	getProjectStory,
-	toProjectDetail,
-} from '@/lib/content';
-import { storyMetadata } from '@/lib/metadata';
 
 export const revalidate = 3600;
 
 export async function generateStaticParams() {
-	const stories = await getProjectStories();
-	return stories.map((story) => ({ slug: story.slug }));
+	return (await getProjectStories()).map((story) => ({ slug: story.slug }));
+}
+
+async function load(slug) {
+	const story = await getStory(`projects/${slug}`);
+	return story?.content?.component === 'project' ? story : null;
 }
 
 export async function generateMetadata({ params }) {
-	const { slug } = await params;
-	const story = await getProjectStory(slug);
+	const story = await load((await params).slug);
 	if (!story) return {};
-	const project = toProjectDetail(story);
-	return storyMetadata(story, {
-		title: project.title,
+	const project = toProject(story);
+	return pageMetadata({
+		title: project.title.replace(/\*/g, ''),
 		description: project.seoDescription,
 		path: project.href,
 		image: project.cover,
@@ -28,8 +27,7 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function ProjectPage({ params }) {
-	const { slug } = await params;
-	const story = await getProjectStory(slug);
+	const story = await load((await params).slug);
 	if (!story) notFound();
 	return <StoryRenderer story={story} />;
 }

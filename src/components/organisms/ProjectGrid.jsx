@@ -12,16 +12,15 @@ import {
 } from '@/components/animations/gsap';
 
 const ALL = 'All';
-const ASPECTS = ['portrait', 'landscape', 'landscape', 'portrait'];
 
 /**
- * The full project overview with calm tag filters.
+ * All projects with a tag filter.
  * Cards glide to their new place with GSAP Flip when the filter changes.
  */
 export default function ProjectGrid({
 	projects = [],
 	showFilter = true,
-	emptyText,
+	emptyText = 'No projects yet.',
 	className,
 }) {
 	const [active, setActive] = useState(ALL);
@@ -50,14 +49,14 @@ export default function ProjectGrid({
 				gsap.set(grid, { autoAlpha: 1 });
 				gsap.fromTo(
 					grid.children,
-					{ autoAlpha: 0, y: 48 },
+					{ autoAlpha: 0, y: 24 },
 					{
 						autoAlpha: 1,
 						y: 0,
-						duration: 1.4,
-						ease: 'expo.out',
-						stagger: 0.12,
-						scrollTrigger: { trigger: grid, start: 'top 85%', once: true },
+						duration: 0.9,
+						ease: 'power2.out',
+						stagger: 0.08,
+						scrollTrigger: { trigger: grid, start: 'top 90%', once: true },
 					},
 				);
 			});
@@ -70,20 +69,17 @@ export default function ProjectGrid({
 	useGSAP(
 		() => {
 			if (!flipState.current || !gridRef.current) return;
-			const reduce = window.matchMedia(
-				'(prefers-reduced-motion: reduce)',
-			).matches;
+			const reduce = !window.matchMedia(MOTION_OK).matches;
 			Flip.from(flipState.current, {
 				targets: gridRef.current.children,
-				duration: reduce ? 0 : 0.9,
-				ease: 'power3.inOut',
+				duration: reduce ? 0 : 0.6,
+				ease: 'power2.inOut',
 				absolute: true,
-				stagger: 0.04,
 				onEnter: (elements) =>
 					gsap.fromTo(
 						elements,
-						{ autoAlpha: 0, scale: 0.96 },
-						{ autoAlpha: 1, scale: 1, duration: 0.8, delay: 0.2 },
+						{ autoAlpha: 0 },
+						{ autoAlpha: 1, duration: 0.4, delay: 0.2 },
 					),
 			});
 			flipState.current = null;
@@ -98,20 +94,7 @@ export default function ProjectGrid({
 	};
 
 	if (!projects.length) {
-		return (
-			<div
-				className={cn(
-					'rounded-[2rem] border border-dashed border-sage-900/15 p-12 text-center',
-					className,
-				)}
-			>
-				<p className="font-serif text-3xl">Fresh projects are growing here.</p>
-				<p className="mt-3 text-sage-700">
-					{emptyText ||
-						'Add a project in Storyblok (folder “projects”) and it will appear here.'}
-				</p>
-			</div>
-		);
+		return <p className={cn('text-sage-700', className)}>{emptyText}</p>;
 	}
 
 	return (
@@ -120,7 +103,7 @@ export default function ProjectGrid({
 				<div
 					role="group"
 					aria-label="Filter projects"
-					className="mb-12 flex flex-wrap gap-2.5"
+					className="mb-10 flex flex-wrap gap-x-5 gap-y-2 text-sm"
 				>
 					{tags.map((tag) => (
 						<button
@@ -129,10 +112,10 @@ export default function ProjectGrid({
 							onClick={() => choose(tag)}
 							aria-pressed={active === tag}
 							className={cn(
-								'rounded-full border px-4 py-2 text-sm transition-colors duration-500',
+								'underline-offset-[6px] transition-colors duration-300',
 								active === tag
-									? 'border-sage-800 bg-sage-800 text-cream-50'
-									: 'border-sage-900/15 text-sage-800 hover:border-sage-900/40',
+									? 'text-sage-950 underline decoration-sage-600'
+									: 'text-sage-600 hover:text-sage-950',
 							)}
 						>
 							{tag}
@@ -144,19 +127,11 @@ export default function ProjectGrid({
 			<div
 				ref={gridRef}
 				data-reveal=""
-				className="grid gap-x-10 gap-y-16 md:grid-cols-2"
+				className="grid gap-x-8 gap-y-12 md:grid-cols-2"
 			>
 				{visible.map((project, index) => (
-					<div
-						key={project.id}
-						data-flip-id={project.id}
-						className={cn(index % 2 === 1 && 'md:mt-24')}
-					>
-						<ProjectCard
-							{...project}
-							aspect={ASPECTS[index % ASPECTS.length]}
-							priority={index < 2}
-						/>
+					<div key={project.id} data-flip-id={project.id}>
+						<ProjectCard {...project} priority={index < 2} />
 					</div>
 				))}
 			</div>

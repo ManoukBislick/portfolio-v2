@@ -82,7 +82,7 @@ export default function RootLayout({ children }) {
 			<head>
 				<script dangerouslySetInnerHTML={{ __html: motionGuard }} />
 			</head>
-			<body className="grain min-h-dvh overflow-x-clip">
+			<body className="min-h-dvh overflow-x-clip">
 				<SiteHeader />
 				<main id="main">{children}</main>
 				<SiteFooter />

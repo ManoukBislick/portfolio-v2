@@ -1,33 +1,15 @@
 import { storyblokEditable } from '@storyblok/react/rsc';
-import { getArticleStories, toArticleCard } from '@/lib/content';
-import { Button, Container } from '@/components/atoms';
-import { SectionHeader } from '@/components/molecules';
-import { ArticleList } from '@/components/organisms';
+import { getArticles } from '@/lib/content';
+import { LatestArticles } from '@/components/organisms';
 
 export default async function LatestArticlesBlok({ blok }) {
-	const articles = (await getArticleStories())
-		.slice(0, Number(blok.count) || 3)
-		.map(toArticleCard);
-	if (!articles.length) return null;
+	const articles = await getArticles();
 	return (
-		<section className="py-20 sm:py-28" {...storyblokEditable(blok)}>
-			<Container>
-				<SectionHeader
-					eyebrow={blok.eyebrow}
-					title={blok.title}
-					size="xl"
-					action={
-						<Button href="/blog" variant="secondary">
-							{blok.link_label || 'All articles'}
-						</Button>
-					}
-				/>
-				<ArticleList
-					articles={articles}
-					featureFirst={false}
-					className="mt-12"
-				/>
-			</Container>
-		</section>
+		<LatestArticles
+			attrs={storyblokEditable(blok)}
+			title={blok.title}
+			linkLabel={blok.link_label}
+			articles={articles.slice(0, Number.parseInt(blok.count, 10) || 3)}
+		/>
 	);
 }

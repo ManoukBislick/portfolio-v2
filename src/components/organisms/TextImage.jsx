@@ -1,69 +1,46 @@
 import { cn } from '@/lib/utils';
-import { Container, Eyebrow, SbImage, withAccents } from '@/components/atoms';
+import { Container, Picture, withAccents } from '@/components/atoms';
 import Reveal from '@/components/animations/Reveal';
-import SplitReveal from '@/components/animations/SplitReveal';
 import ImageReveal from '@/components/animations/ImageReveal';
-import Parallax from '@/components/animations/Parallax';
 
-/** A story section: arched photo on one side, heading and rich text on the other. */
+/** A photo on one side, a heading and some text on the other. */
 export default function TextImage({
-	eyebrow,
 	title,
 	body,
 	image,
 	caption,
 	reverse = false,
-	className,
 	attrs,
+	className,
 }) {
 	return (
-		<section className={cn('py-16 sm:py-24', className)} {...attrs}>
-			<Container className="grid items-center gap-14 lg:grid-cols-[0.9fr_1.1fr] lg:gap-24">
-				<figure
-					className={cn(
-						'relative mx-auto w-full max-w-md',
-						reverse && 'lg:order-2',
-					)}
-				>
-					<span
-						aria-hidden="true"
-						className="absolute -inset-6 -z-10 rounded-arch bg-sage-100"
-					/>
-					<Parallax speed={6}>
-						<ImageReveal className="rounded-arch aspect-[4/5] bg-sage-100">
-							<div className="relative size-full">
-								<SbImage
-									image={image}
-									fill
-									sizes="(min-width: 1024px) 28rem, 90vw"
-								/>
-							</div>
-						</ImageReveal>
-					</Parallax>
+		<section className={cn('py-12 sm:py-16', className)} {...attrs}>
+			<Container className="grid items-start gap-10 md:grid-cols-[0.8fr_1.2fr] md:gap-16">
+				<figure className={cn('w-full max-w-sm', reverse && 'md:order-2')}>
+					<ImageReveal className="aspect-[4/5] rounded-lg bg-sage-100">
+						<div className="relative size-full">
+							<Picture
+								image={image}
+								fill
+								sizes="(min-width: 768px) 24rem, 90vw"
+							/>
+						</div>
+					</ImageReveal>
 					{caption ? (
-						<figcaption className="mt-8 text-center font-serif text-lg text-sage-700 italic">
+						<figcaption className="mt-3 text-sm text-sage-600">
 							{caption}
 						</figcaption>
 					) : null}
 				</figure>
 
-				<div className="flex flex-col gap-6">
-					{eyebrow ? (
-						<Reveal y={12}>
-							<Eyebrow>{eyebrow}</Eyebrow>
-						</Reveal>
-					) : null}
+				<Reveal className="flex flex-col gap-5">
 					{title ? (
-						<SplitReveal className="text-4xl leading-[1.05] sm:text-5xl">
+						<h2 className="text-3xl leading-tight sm:text-4xl">
 							{withAccents(title)}
-						</SplitReveal>
+						</h2>
 					) : null}
-					{body ? (
-						<Reveal delay={0.15} className="prose-calm">
-							{body}
-						</Reveal>
-					) : null}
-				</div>
+					{body}
+				</Reveal>
 			</Container>
 		</section>
 	);

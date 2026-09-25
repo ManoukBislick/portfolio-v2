@@ -1,28 +1,47 @@
 import { site } from './site';
 
-/** Build Next.js metadata from a Storyblok story's SEO fields, with sensible defaults. */
-export function storyMetadata(
-	story,
-	{ title, description, path = '/', image } = {},
-) {
-	const c = story?.content ?? {};
-	const finalTitle = c.seo_title || title;
-	const finalDescription = c.seo_description || description || site.description;
-	const ogImage = image?.filename || image;
+/** Build Next.js metadata for a page, with sensible defaults. */
+export function pageMetadata({
+	title,
+	description,
+	path = '/',
+	image,
+	type = 'website',
+	publishedTime,
+} = {}) {
+	const finalDescription = description || site.description;
+	const imageUrl = typeof image === 'string' ? image : image?.src;
+	// Open Graph images must be raster files; skip SVGs.
+	const ogImage =
+		imageUrl && !/\.svg($|\?)/.test(imageUrl) ? imageUrl : undefined;
 
 	return {
-		title: finalTitle,
+		title,
 		description: finalDescription,
 		alternates: { canonical: path },
 		openGraph: {
-			title: finalTitle ? `${finalTitle} — ${site.name}` : site.name,
+			title: title ? `${title} — ${site.name}` : site.name,
 			description: finalDescription,
 			url: path,
 			siteName: site.name,
-			type: 'website',
-			...(ogImage && ogImage.startsWith('http')
-				? { images: [{ url: ogImage }] }
-				: {}),
+			type,
+			...(publishedTime ? { publishedTime } : {}),
+			...(ogImage ? { images: [{ url: ogImage }] } : {}),
 		},
 	};
+}
+
+/**
+ * Metadata for a `page` story: the SEO fields from Storyblok, otherwise the
+ * title of the page intro. The homepage keeps the default site title.
+ */
+export function pageStoryMetadata(story, path) {
+	const c = story?.content ?? {};
+	const intro = c.body?.find((blok) => blok.component === 'page_hero');
+	const fallbackTitle = path === '/' ? undefined : intro?.title || story?.name;
+	return pageMetadata({
+		title: c.seo_title || fallbackTitle?.replace(/\*/g, ''),
+		description: c.seo_description || intro?.intro,
+		path,
+	});
 }

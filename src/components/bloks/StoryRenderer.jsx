@@ -1,20 +1,16 @@
-import { StoryblokStory } from '@storyblok/react/rsc';
+import { StoryblokServerComponent, StoryblokStory } from '@storyblok/react/rsc';
+import { getVersion } from '@/lib/content';
 import './registry';
 
 /**
- * Renders a Storyblok story (or a placeholder story with the same shape)
- * and enables live editing inside the Storyblok Visual Editor.
+ * Renders a story with the component that belongs to its content type.
+ * While developing and in the Visual Editor it also listens for changes,
+ * so edits show up in the preview while you type.
  */
-export default function StoryRenderer({ story }) {
-	if (!story) return null;
-	const meta = {
-		uuid: story.uuid,
-		slug: story.slug,
-		full_slug: story.full_slug,
-		name: story.name,
-		first_published_at: story.first_published_at,
-		published_at: story.published_at,
-		created_at: story.created_at,
-	};
-	return <StoryblokStory story={story} meta={meta} />;
+export default async function StoryRenderer({ story }) {
+	if (!story?.content) return null;
+	if ((await getVersion()) === 'draft' && story.id) {
+		return <StoryblokStory story={story} meta={story} />;
+	}
+	return <StoryblokServerComponent blok={story.content} meta={story} />;
 }

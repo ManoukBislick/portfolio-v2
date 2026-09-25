@@ -1,17 +1,13 @@
 import { storyblokEditable } from '@storyblok/react/rsc';
 import { Container } from '@/components/atoms';
-import { SectionHeader } from '@/components/molecules';
-import { RichText } from '@/components/organisms';
 import Reveal from '@/components/animations/Reveal';
+import RichText from './RichText';
 
-/** A simple text section for flexible pages (privacy policy, colophon, …). */
+/** A section with just text, in the same narrow column as an article. */
 export default function RichTextBlok({ blok }) {
 	return (
 		<section className="py-12 sm:py-16" {...storyblokEditable(blok)}>
-			<Container narrow className="flex flex-col gap-10">
-				{blok.title ? (
-					<SectionHeader eyebrow={blok.eyebrow} title={blok.title} size="xl" />
-				) : null}
+			<Container narrow>
 				<Reveal>
 					<RichText document={blok.body} />
 				</Reveal>

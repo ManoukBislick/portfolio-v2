@@ -5,90 +5,51 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { site } from '@/lib/site';
-import { Button, Icon, Logo, StatusDot } from '@/components/atoms';
-import { NavLink, SocialLinks } from '@/components/molecules';
+import { Logo } from '@/components/atoms';
+import { NavLink } from '@/components/molecules';
 import { isActivePath } from '@/components/molecules/NavLink';
-import {
-	gsap,
-	ScrollTrigger,
-	useGSAP,
-	EASE,
-} from '@/components/animations/gsap';
+import { gsap, useGSAP, MOTION_OK } from '@/components/animations/gsap';
 
 export default function SiteHeader() {
 	const [open, setOpen] = useState(false);
-	const headerRef = useRef(null);
 	const menuRef = useRef(null);
 	const menuTl = useRef(null);
-	const openRef = useRef(false);
 	const pathname = usePathname() || '/';
 
-	useGSAP(
-		() => {
-			const header = headerRef.current;
-			const menu = menuRef.current;
-			if (!header || !menu) return;
+	// Mobile menu: fades in, links rise one after another.
+	useGSAP(() => {
+		const menu = menuRef.current;
+		if (!menu) return;
+		const links = menu.querySelectorAll('[data-menu-item]');
+		const reduce = !window.matchMedia(MOTION_OK).matches;
 
-			// Hide the header while scrolling down, bring it back when scrolling up.
-			let hidden = false;
-			const setHidden = (value) => {
-				if (value === hidden) return;
-				hidden = value;
-				gsap.to(header, {
-					yPercent: value ? -120 : 0,
-					duration: 0.7,
-					ease: 'power3.out',
-					overwrite: true,
-				});
-			};
-			const trigger = ScrollTrigger.create({
-				start: 0,
-				end: 'max',
-				onUpdate: (self) => {
-					const y = self.scroll();
-					header.dataset.scrolled = y > 24 ? 'true' : 'false';
-					if (openRef.current) return setHidden(false);
-					setHidden(self.direction === 1 && y > 220);
+		menuTl.current = gsap
+			.timeline({ paused: true })
+			.set(menu, { display: 'flex' })
+			.fromTo(
+				menu,
+				{ autoAlpha: 0 },
+				{ autoAlpha: 1, duration: reduce ? 0 : 0.35, ease: 'power1.out' },
+			)
+			.fromTo(
+				links,
+				{ y: reduce ? 0 : 16, autoAlpha: 0 },
+				{
+					y: 0,
+					autoAlpha: 1,
+					duration: reduce ? 0 : 0.5,
+					stagger: reduce ? 0 : 0.05,
+					ease: 'power2.out',
 				},
-			});
-
-			// Full-screen menu: a soft circle that opens from the menu button.
-			const tl = gsap
-				.timeline({ paused: true })
-				.set(menu, { display: 'flex' })
-				.fromTo(
-					menu,
-					{ clipPath: 'circle(0% at calc(100% - 2.75rem) 2.75rem)' },
-					{
-						clipPath: 'circle(150% at calc(100% - 2.75rem) 2.75rem)',
-						duration: 0.9,
-						ease: 'power3.inOut',
-					},
-				)
-				.fromTo(
-					menu.querySelectorAll('[data-menu-item]'),
-					{ yPercent: 110, opacity: 0 },
-					{ yPercent: 0, opacity: 1, duration: 0.9, ease: EASE, stagger: 0.06 },
-					0.35,
-				);
-
-			menuTl.current = tl;
-			return () => trigger.kill();
-		},
-		{ scope: headerRef },
-	);
+				reduce ? 0 : 0.1,
+			);
+	});
 
 	useEffect(() => {
-		openRef.current = open;
 		const tl = menuTl.current;
 		if (tl) {
-			// Close a little faster than it opens; near-instant when motion is reduced.
-			const reduce = window.matchMedia(
-				'(prefers-reduced-motion: reduce)',
-			).matches;
-			const speed = reduce ? 8 : 1;
-			if (open) tl.timeScale(speed).play();
-			else tl.timeScale(speed * 1.8).reverse();
+			if (open) tl.timeScale(1).play();
+			else tl.timeScale(1.6).reverse();
 		}
 		document.documentElement.style.overflow = open ? 'hidden' : '';
 
@@ -102,23 +63,19 @@ export default function SiteHeader() {
 
 	return (
 		<>
-			<header
-				ref={headerRef}
-				data-scrolled="false"
-				className="group/header fixed inset-x-0 top-0 z-50 transition-[background-color,box-shadow] duration-700 data-[scrolled=true]:bg-cream-50/80 data-[scrolled=true]:shadow-[0_1px_0_rgba(37,52,39,0.06)] data-[scrolled=true]:backdrop-blur-md"
-			>
+			<header className="relative z-50">
 				<a
 					href="#main"
-					className="sr-only rounded-full bg-sage-900 px-4 py-2 text-cream-50 focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[70]"
+					className="sr-only rounded bg-sage-900 px-4 py-2 text-cream-50 focus:not-sr-only focus:absolute focus:top-4 focus:left-4"
 				>
 					Skip to content
 				</a>
 
-				<div className="container-page flex items-center justify-between py-4 sm:py-5">
-					<Logo className="relative z-[60]" onClick={close} />
+				<div className="container-page flex items-center justify-between py-6 sm:py-8">
+					<Logo onClick={close} />
 
-					<nav aria-label="Main" className="hidden md:block">
-						<ul className="flex items-center gap-8 rounded-full border border-sage-900/8 bg-cream-50/60 px-7 py-3 text-sm backdrop-blur-md">
+					<nav aria-label="Main" className="hidden sm:block">
+						<ul className="flex items-center gap-8 text-sm">
 							{site.nav.map((item) => (
 								<li key={item.href}>
 									<NavLink href={item.href}>{item.label}</NavLink>
@@ -127,31 +84,14 @@ export default function SiteHeader() {
 						</ul>
 					</nav>
 
-					<div className="hidden md:block">
-						<Button
-							href="/contact"
-							variant="secondary"
-							icon="arrow-up-right"
-							className="py-2.5!"
-						>
-							Let&apos;s talk
-						</Button>
-					</div>
-
 					<button
 						type="button"
 						onClick={() => setOpen((value) => !value)}
 						aria-expanded={open}
 						aria-controls="mobile-menu"
-						aria-label={open ? 'Close menu' : 'Open menu'}
-						className={cn(
-							'relative z-[60] grid size-12 place-items-center rounded-full border transition-colors duration-500 md:hidden',
-							open
-								? 'border-sage-900 bg-sage-900 text-cream-50'
-								: 'border-sage-900/15 bg-cream-50/70 text-sage-900 backdrop-blur-md',
-						)}
+						className="text-sm font-medium text-sage-900 underline decoration-sage-300 underline-offset-[6px] sm:hidden"
 					>
-						<Icon name={open ? 'close' : 'menu'} className="size-5" />
+						{open ? 'Close' : 'Menu'}
 					</button>
 				</div>
 			</header>
@@ -159,55 +99,33 @@ export default function SiteHeader() {
 			<div
 				ref={menuRef}
 				id="mobile-menu"
-				className="fixed inset-0 z-40 hidden flex-col justify-between overflow-y-auto bg-cream-100 px-5 pt-28 pb-10 sm:px-8 md:hidden"
+				className="fixed inset-0 z-40 hidden flex-col bg-cream-50 px-5 pt-28 pb-10 sm:hidden"
 				aria-hidden={!open}
 				inert={!open}
 			>
 				<nav aria-label="Mobile">
-					<ul className="flex flex-col gap-1">
-						{site.nav.map((item, index) => {
+					<ul className="flex flex-col gap-2">
+						{site.nav.map((item) => {
 							const active = isActivePath(pathname, item.href);
 							return (
-								<li key={item.href} className="overflow-hidden">
+								<li key={item.href}>
 									<Link
 										href={item.href}
 										onClick={close}
 										data-menu-item=""
 										aria-current={active ? 'page' : undefined}
-										className="flex items-baseline gap-4 py-1 font-serif text-5xl text-sage-950 sm:text-6xl"
+										className={cn(
+											'block py-1 font-serif text-4xl',
+											active ? 'text-sage-600' : 'text-sage-950',
+										)}
 									>
-										<span className="font-sans text-xs text-sage-500">
-											0{index + 1}
-										</span>
-										<span className={cn(active && 'italic text-sage-600')}>
-											{item.label}
-										</span>
+										{item.label}
 									</Link>
 								</li>
 							);
 						})}
 					</ul>
 				</nav>
-
-				<div className="flex flex-col gap-6 overflow-hidden">
-					<p
-						data-menu-item=""
-						className="inline-flex items-center gap-3 text-sm text-sage-700"
-					>
-						<StatusDot /> Open to new projects
-					</p>
-					<div data-menu-item="">
-						<a
-							href={`mailto:${site.email}`}
-							className="font-serif text-2xl text-sage-900 link-underline"
-						>
-							{site.email}
-						</a>
-					</div>
-					<div data-menu-item="">
-						<SocialLinks />
-					</div>
-				</div>
 			</div>
 		</>
 	);

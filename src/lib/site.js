@@ -1,38 +1,25 @@
 /**
- * Global site settings. Everything page-specific lives in Storyblok;
- * these are the few things that rarely change.
+ * Global site settings. All page content (texts, projects, blog posts) is in Storyblok.
  */
 export const site = {
 	name: 'Manouk Bislick',
-	shortName: 'Manouk',
 	role: 'Frontend developer',
 	description:
-		'Portfolio of Manouk Bislick — frontend developer crafting calm, thoughtful websites with Next.js, React and Storyblok.',
+		'Manouk Bislick is a frontend developer in the Netherlands. Projects, notes and articles about CSS, React, Next.js and AI.',
 	url:
 		process.env.NEXT_PUBLIC_SITE_URL ||
 		(process.env.VERCEL_PROJECT_PRODUCTION_URL
 			? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
 			: 'http://localhost:3000'),
-	email: process.env.NEXT_PUBLIC_CONTACT_EMAIL || 'hello@example.com',
-	location: 'The Netherlands',
 	nav: [
 		{ label: 'Home', href: '/' },
 		{ label: 'About', href: '/about' },
 		{ label: 'Projects', href: '/projects' },
 		{ label: 'Blog', href: '/blog' },
-		{ label: 'Contact', href: '/contact' },
 	],
+	// Shown in the footer. Replace the LinkedIn URL with your own profile, or remove it.
 	socials: [
-		{ label: 'LinkedIn', href: 'https://www.linkedin.com/', icon: 'linkedin' },
-		{
-			label: 'GitHub',
-			href: 'https://github.com/ManoukBislick',
-			icon: 'github',
-		},
-		{
-			label: 'Instagram',
-			href: 'https://www.instagram.com/',
-			icon: 'instagram',
-		},
+		{ label: 'GitHub', href: 'https://github.com/ManoukBislick' },
+		{ label: 'LinkedIn', href: 'https://www.linkedin.com/' },
 	],
 };

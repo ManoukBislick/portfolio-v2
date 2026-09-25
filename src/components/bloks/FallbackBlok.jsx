@@ -1,11 +1,13 @@
-/** Rendered for bloks that exist in Storyblok but not (yet) in code. */
+/** Shown while developing for a Storyblok component that has no React component yet. */
 export default function FallbackBlok({ blok }) {
 	if (process.env.NODE_ENV === 'production') return null;
 	return (
-		<div className="container-page my-8 rounded-2xl border border-dashed border-clay-600/40 p-6 text-sm text-clay-600">
-			No component registered for the Storyblok blok{' '}
-			<strong>{blok?.component}</strong>. Add it to
-			<code className="mx-1">src/components/bloks/registry.js</code>.
+		<div className="container-page my-8">
+			<p className="rounded-md border border-dashed border-sage-400 p-5 text-sm text-sage-700">
+				There is no React component for the Storyblok component{' '}
+				<strong>{blok?.component}</strong> yet. Add one to
+				src/components/bloks/registry.js.
+			</p>
 		</div>
 	);
 }

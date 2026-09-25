@@ -1,17 +1,12 @@
 import { setComponents } from '@storyblok/react/rsc';
 
 import ArticleBlok from './ArticleBlok';
-import ArticleIndexBlok from './ArticleIndexBlok';
-import ContactSectionBlok from './ContactSectionBlok';
-import CtaBlok from './CtaBlok';
-import FactsBlok from './FactsBlok';
+import ArticleListBlok from './ArticleListBlok';
 import FeaturedProjectsBlok from './FeaturedProjectsBlok';
 import HeroBlok from './HeroBlok';
 import LatestArticlesBlok from './LatestArticlesBlok';
-import MarqueeBlok from './MarqueeBlok';
-import Page from './Page';
+import PageBlok from './PageBlok';
 import PageHeroBlok from './PageHeroBlok';
-import PillarsBlok from './PillarsBlok';
 import ProjectBlok from './ProjectBlok';
 import ProjectGridBlok from './ProjectGridBlok';
 import RichTextBlok from './RichTextBlok';
@@ -20,30 +15,26 @@ import TextImageBlok from './TextImageBlok';
 import TimelineBlok from './TimelineBlok';
 
 /**
- * Storyblok technical name → React component.
- * Keep this in sync with scripts/storyblok/schema.mjs.
+ * Storyblok component name → React component.
+ * The fields of each component are defined in scripts/storyblok/schema.mjs.
+ * Buttons, timeline items and skill groups are rendered by their parent section.
  */
 export const bloks = {
 	// Content types
-	page: Page,
+	page: PageBlok,
 	project: ProjectBlok,
 	article: ArticleBlok,
 	// Sections
 	hero: HeroBlok,
 	page_hero: PageHeroBlok,
-	marquee: MarqueeBlok,
-	pillars: PillarsBlok,
 	text_image: TextImageBlok,
-	facts: FactsBlok,
+	rich_text: RichTextBlok,
 	timeline: TimelineBlok,
 	skills: SkillsBlok,
 	featured_projects: FeaturedProjectsBlok,
-	project_grid: ProjectGridBlok,
-	article_index: ArticleIndexBlok,
 	latest_articles: LatestArticlesBlok,
-	rich_text: RichTextBlok,
-	cta: CtaBlok,
-	contact_section: ContactSectionBlok,
+	project_grid: ProjectGridBlok,
+	article_list: ArticleListBlok,
 };
 
 setComponents(bloks);

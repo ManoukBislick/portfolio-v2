@@ -1,32 +1,19 @@
 import { cn } from '@/lib/utils';
-import { Container } from '@/components/atoms';
-import { SectionHeader } from '@/components/molecules';
-import BotanicalLine from '@/components/animations/BotanicalLine';
+import { Container, Text, withAccents } from '@/components/atoms';
+import Reveal from '@/components/animations/Reveal';
 
-/** Calm opening for inner pages: big serif title, short intro, a growing branch. */
-export default function PageHero({ eyebrow, title, intro, className, attrs }) {
+/** Title and a short intro at the top of inner pages. */
+export default function PageHero({ title, intro, attrs, className }) {
 	return (
 		<section
-			className={cn(
-				'relative overflow-hidden pt-36 pb-12 sm:pt-44 sm:pb-20',
-				className,
-			)}
+			className={cn('pt-6 pb-12 sm:pt-14 sm:pb-16', className)}
 			{...attrs}
 		>
-			<Container className="relative">
-				<SectionHeader
-					as="h1"
-					size="display"
-					eyebrow={eyebrow}
-					title={title}
-					intro={intro}
-					onLoad
-				/>
-				<BotanicalLine
-					onLoad
-					delay={0.5}
-					className="pointer-events-none absolute -top-16 right-8 hidden h-80 w-auto lg:block xl:right-16"
-				/>
+			<Container>
+				<Reveal onLoad className="flex max-w-3xl flex-col gap-5">
+					<h1 className="text-title">{withAccents(title)}</h1>
+					{intro ? <Text size="lead">{intro}</Text> : null}
+				</Reveal>
 			</Container>
 		</section>
 	);

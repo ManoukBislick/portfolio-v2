@@ -1,8 +1,6 @@
-/**
- * Read an environment variable, ignoring the `<PLACEHOLDER>` values from .env.example.
- */
+/** Read an environment variable, ignoring empty values and `<PLACEHOLDERS>` from .env.example. */
 export function env(name) {
-	const value = process.env[name];
-	if (!value || /^<.*>$/.test(value.trim())) return undefined;
+	const value = process.env[name]?.trim();
+	if (!value || /^<.*>$/.test(value)) return undefined;
 	return value;
 }

@@ -1,21 +1,12 @@
 import { storyblokEditable } from '@storyblok/react/rsc';
-import { getProjectStories, toProjectDetail } from '@/lib/content';
-import { RichText } from '@/components/organisms';
+import { getNextProject, toProject } from '@/lib/content';
 import ProjectTemplate from '@/components/templates/ProjectTemplate';
+import RichText from './RichText';
 
-/** Content type `project`: a full case study page. */
-export default async function ProjectBlok({ blok, meta: story }) {
-	const project = toProjectDetail({ ...story, content: blok });
-	const all = await getProjectStories();
-	const index = all.findIndex((item) => item.slug === story?.slug);
-	const nextStory = all.length > 1 ? all[(index + 1) % all.length] : null;
-	const next = nextStory
-		? {
-				href: `/projects/${nextStory.slug}`,
-				title: nextStory.content?.title || nextStory.name,
-				cover: nextStory.content?.cover,
-			}
-		: null;
+/** Content type `project`: one project page. */
+export default async function ProjectBlok({ blok, meta }) {
+	const project = toProject({ ...meta, content: blok });
+	const next = await getNextProject(project.slug);
 
 	return (
 		<ProjectTemplate

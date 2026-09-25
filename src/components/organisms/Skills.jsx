@@ -1,39 +1,37 @@
 import { cn } from '@/lib/utils';
 import { Container } from '@/components/atoms';
-import { SectionHeader, SkillGroup } from '@/components/molecules';
+import { SectionHeader } from '@/components/molecules';
 import Reveal from '@/components/animations/Reveal';
 
-const ICONS = ['code', 'layers', 'sprout', 'heart'];
-
-/** Skills grouped in soft cards on a pale sage background. */
+/** Skills in a few plain columns. */
 export default function Skills({
-	eyebrow,
 	title,
 	intro,
 	groups = [],
-	className,
 	attrs,
+	className,
 }) {
 	return (
-		<section className={cn('py-8 sm:py-12', className)} {...attrs}>
+		<section className={cn('py-12 sm:py-16', className)} {...attrs}>
 			<Container>
-				<div className="rounded-[2.5rem] bg-sage-50 px-6 py-16 sm:px-12 sm:py-20 lg:px-16">
-					<SectionHeader
-						eyebrow={eyebrow}
-						title={title}
-						intro={intro}
-						size="xl"
-					/>
-					<Reveal stagger={0.1} className="mt-12 grid gap-5 md:grid-cols-2">
-						{groups.map((group, index) => (
-							<SkillGroup
-								key={group.id}
-								icon={ICONS[index % ICONS.length]}
-								{...group}
-							/>
-						))}
-					</Reveal>
-				</div>
+				<SectionHeader title={title} intro={intro} />
+				<Reveal
+					stagger={0.06}
+					className="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-4"
+				>
+					{groups.map((group) => (
+						<div key={group.id ?? group.title} {...group.attrs}>
+							<h3 className="font-sans text-sm font-medium text-sage-950">
+								{group.title}
+							</h3>
+							<ul className="mt-3 flex flex-col gap-1.5 text-sage-800">
+								{group.skills.map((skill) => (
+									<li key={skill}>{skill}</li>
+								))}
+							</ul>
+						</div>
+					))}
+				</Reveal>
 			</Container>
 		</section>
 	);

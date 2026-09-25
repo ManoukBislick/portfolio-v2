@@ -1,17 +1,24 @@
+import { getStory } from '@/lib/content';
+import { pageStoryMetadata } from '@/lib/metadata';
 import StoryRenderer from '@/components/bloks/StoryRenderer';
-import { getPage } from '@/lib/content';
-import { storyMetadata } from '@/lib/metadata';
 
 export const revalidate = 3600;
 
+/** Used when the Blog folder in Storyblok has no start page (yet). */
+const fallback = {
+	content: {
+		component: 'page',
+		body: [
+			{ _uid: 'blog-intro', component: 'page_hero', title: 'Blog' },
+			{ _uid: 'blog-list', component: 'article_list' },
+		],
+	},
+};
+
 export async function generateMetadata() {
-	return storyMetadata(await getPage('blog'), {
-		title: 'Blog',
-		description: 'Monthly notes on AI, Next.js, React and Storyblok.',
-		path: '/blog',
-	});
+	return pageStoryMetadata((await getStory('blog/')) ?? fallback, '/blog');
 }
 
 export default async function BlogPage() {
-	return <StoryRenderer story={await getPage('blog')} />;
+	return <StoryRenderer story={(await getStory('blog/')) ?? fallback} />;
 }

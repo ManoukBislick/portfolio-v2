@@ -1,115 +1,85 @@
-# Manouk Bislick — Portfolio v2
+# Manouk Bislick, portfolio
 
-A calm, green portfolio built with **Next.js (App Router)**, **Storyblok**, **Tailwind CSS v4** and **GSAP**, hosted on **Vercel**.
+My portfolio, built with **Next.js (App Router)**, **Storyblok**, **Tailwind CSS v4** and **GSAP**, hosted on **Vercel**.
 
-- Pages: Home, About, Projects (+ case studies), Blog (+ articles), Contact
-- Every section is a Storyblok block — rearrange pages without touching code
-- Atomic design system with reusable components
-- Gentle animations that switch off automatically for `prefers-reduced-motion`
-- Works without Storyblok too: placeholder content is built in, so `npm run dev` always shows a complete site
+- Pages: Home, About, Projects (with a page per project) and Blog (with a page per article)
+- All content lives in Storyblok: pages are built from sections you can add, remove and reorder
+- Components follow atomic design (atoms, molecules, organisms, templates), and every Storyblok component has a small React counterpart in `src/components/bloks`
+- Animations switch off for visitors who prefer reduced motion
 
-## Quick start
+## Getting started
 
 ```sh
 npm install
-cp .env.example .env.local   # fill in at least STORYBLOK_DELIVERY_API_TOKEN
-npm run dev                  # https://localhost:3000 (HTTPS for the Visual Editor)
+cp .env.example .env.local   # then fill in the tokens
+npm run storyblok:setup      # once: creates the components and the starting content
+npm run dev                  # https://localhost:3000
 ```
 
-Without a Storyblok token the site renders the placeholder content from `src/data/fallback` and the Markdown drafts in `content/blog`.
+`npm run dev` runs over https, because the Storyblok Visual Editor only loads https pages. The first time, your Mac may ask for your password to trust the local certificate. `npm run dev:http` runs without https.
+
+## Editing content
+
+Open your space in Storyblok. The setup creates:
+
+| Story                 | Content type | What it is                                  |
+| --------------------- | ------------ | ------------------------------------------- |
+| Home                  | Page         | The homepage                                |
+| About                 | Page         | The about page                              |
+| Projects (start page) | Page         | Intro of /projects and the grid of projects |
+| Projects / …          | Project      | One story per project, at /projects/<slug>  |
+| Blog (start page)     | Page         | Intro of /blog and the list of articles     |
+| Blog / …              | Article      | One story per article, at /blog/<slug>      |
+
+A new page at the top level (for example `uses`) works straight away at `/uses`. Add it to `nav` in `src/lib/site.js` if it should be in the menu.
+
+In a title you can write `I build *calm* websites`: the words between asterisks become an italic accent.
+
+Open a story and pick **Local (npm run dev)** at the top of the Visual Editor to see your changes while you type. Once the site is deployed, **Live site (draft mode)** does the same on the live site without running anything locally.
+
+### Publishing
+
+Pages are cached for an hour. To see published changes straight away, add a webhook in Storyblok (Settings → Webhooks, trigger "Story published & unpublished") to
+`https://<your-domain>/api/revalidate?secret=<STORYBLOK_WEBHOOK_SECRET>`, and add the same `STORYBLOK_WEBHOOK_SECRET` on Vercel.
+
+## The content model
+
+The Storyblok components are defined in code, in `scripts/storyblok/schema.mjs`. To add or change a field, edit that file, run `npm run storyblok:setup -- --components` and update the matching component in `src/components/bloks`.
+
+| Script                                    | What it does                                                    |
+| ----------------------------------------- | --------------------------------------------------------------- |
+| `npm run storyblok:setup`                 | Creates or updates the components and adds the starting content |
+| `npm run storyblok:setup -- --components` | Only the components                                             |
+| `npm run storyblok:setup -- --dry-run`    | Shows what would change                                         |
+| `npm run storyblok:setup -- --force`      | Also overwrites stories that already exist                      |
+
+The starting content is in `scripts/storyblok/seed.mjs`. After the first run, Storyblok is the place to edit.
+
+## Blog: one article a month
+
+At the start of every month a scheduled Claude task writes a new article as a Markdown file in `drafts/` and sends a reminder. Run `npm run blog:push` to put it into Storyblok as an unpublished article, read it there, add a cover image and press Publish. See [`drafts/README.md`](drafts/README.md); topic ideas are in [`drafts/IDEAS.md`](drafts/IDEAS.md).
 
 ## Project structure
 
 ```
 src/
-  app/                    routes (App Router) + server action for the contact form
+  app/                  routes (App Router) and the /api/draft and /api/revalidate endpoints
   components/
-    atoms/                Button, Heading, Text, Tag, Icon, Input, SbImage …
-    molecules/            ProjectCard, ArticleCard, TimelineItem, FormField …
-    organisms/            Hero, Timeline, Skills, ProjectGrid, ContactForm, SiteHeader …
-    templates/            ProjectTemplate, ArticleTemplate
-    animations/           GSAP building blocks: Reveal, SplitReveal, ImageReveal,
-                          Parallax, Float, Magnetic, BotanicalLine, CountUp …
-    bloks/                Storyblok adapters: map blok data → organism props
-  lib/                    Storyblok client, data fetching, helpers
-  data/fallback/          placeholder content (same shape as Storyblok)
-content/blog/             monthly article drafts in Markdown + topic ideas
-scripts/                  Storyblok setup and blog-draft scripts
+    atoms/              Button, Heading, Text, Tag, Picture, Logo, Container
+    molecules/          ProjectCard, ArticleCard, TimelineItem, SectionHeader, MetaList, NavLink
+    organisms/          Hero, Timeline, Skills, ProjectGrid, FeaturedProjects, LatestArticles …
+    templates/          ProjectTemplate, ArticleTemplate
+    bloks/              one component per Storyblok component, plus the rich text renderer
+    animations/         GSAP components: Reveal, SplitReveal, ImageReveal, Parallax, BotanicalLine, PageTransition
+  lib/                  Storyblok client, content helpers and site settings
+scripts/
+  storyblok/            content model, starting content and the setup script
+  blog/                 blog:push
+drafts/                 blog drafts and ideas
 ```
 
-**Atoms → molecules → organisms → templates** never import Storyblok. The `bloks/` layer is the only place that knows about the CMS, which keeps the design system reusable.
+Colours, fonts and sizes are defined in `src/app/globals.css` (`@theme`): `cream`, `sage` and `blush`, Poppins (`font-sans`) and Cormorant Garamond (`font-serif`, self-hosted in `src/fonts`).
 
-### Design tokens
+## Vercel
 
-Defined in `src/app/globals.css` (`@theme`): `cream`, `sage` (green scale) and `blush` colours, Poppins (`font-sans`) + Cormorant Garamond (`font-serif`, self-hosted in `src/fonts`), fluid `text-display` / `text-title` sizes and the `rounded-arch` shape.
-
-In any heading field in Storyblok you can write `I build *calm* websites` — the words between asterisks become an italic green accent.
-
-## Storyblok
-
-### 1. Push the content model and placeholder content
-
-Create a personal access token (Storyblok → My account → Personal access tokens), add it and your space ID to `.env.local`, then run:
-
-```sh
-npm run storyblok:setup              # components + placeholder pages/projects/article
-npm run storyblok:setup -- --dry-run # preview first
-npm run storyblok:setup -- --components  # only update the components
-```
-
-This creates all blocks (grouped as _Content types_, _Sections_ and _Items_), the pages `home`, `about`, `contact`, the folders `projects/` and `blog/` with their overview pages, sample projects (as drafts) and the first blog article (as a draft). Existing stories are left alone unless you pass `--force` — except the blueprint's original `home` story, which is replaced.
-
-### 2. Content types
-
-| Content type | Where                                            | Rendered at        |
-| ------------ | ------------------------------------------------ | ------------------ |
-| `page`       | `home`, `about`, `contact`, `projects/`, `blog/` | `/`, `/about`, …   |
-| `project`    | `projects/<slug>`                                | `/projects/<slug>` |
-| `article`    | `blog/<slug>`                                    | `/blog/<slug>`     |
-
-Section blocks: `hero`, `page_hero`, `marquee`, `pillars`, `text_image`, `facts`, `timeline`, `skills`, `featured_projects`, `project_grid`, `article_index`, `latest_articles`, `rich_text`, `cta`, `contact_section`.
-
-### 3. Visual Editor
-
-- **Local:** Settings → Visual Editor → `https://localhost:3000/` (draft content is always used in `npm run dev`).
-- **Production:** add a preview URL `https://<your-domain>/api/draft?secret=<STORYBLOK_PREVIEW_SECRET>&slug=` — it enables Next.js Draft Mode and forwards the editor parameters.
-- The `home` story's _Real path_ is `/`.
-
-### 4. Publishing & caching
-
-Pages are statically generated and refreshed every hour. For instant updates, add a webhook in Storyblok (Settings → Webhooks → _Story published & unpublished_):
-
-```
-https://<your-domain>/api/revalidate?secret=<STORYBLOK_WEBHOOK_SECRET>
-```
-
-## Blog — one article a month
-
-1. At the start of every month a scheduled Claude task writes a new article (AI, Next.js, React or Storyblok) to `content/blog/YYYY-MM-slug.md` and reminds you.
-2. Get it into Storyblok as a **draft**, either:
-   - `npm run blog:push` from your own terminal, or
-   - commit & push the file — a GitHub Action creates the draft. To enable it, move `scripts/blog/github-workflow-blog-drafts.yml` to `.github/workflows/blog-drafts.yml` and add the `STORYBLOK_MANAGEMENT_TOKEN` secret and `STORYBLOK_SPACE_ID` variable in GitHub.
-3. Review, add a cover image and publish in Storyblok.
-
-Topic ideas live in [`content/blog/IDEAS.md`](content/blog/IDEAS.md).
-
-## Contact form
-
-`src/app/contact/actions.js` is a Server Action that validates the form, filters bots (honeypot + minimum fill time) and sends the message with [Resend](https://resend.com). Set `RESEND_API_KEY`, `CONTACT_TO_EMAIL` and `CONTACT_FROM_EMAIL` (a sender on a domain verified in Resend). In development without a key, messages are logged to the terminal instead.
-
-## Environment variables on Vercel
-
-`STORYBLOK_DELIVERY_API_TOKEN`, `STORYBLOK_REGION`, `STORYBLOK_PREVIEW_SECRET`, `STORYBLOK_WEBHOOK_SECRET`, `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_CONTACT_EMAIL`, `RESEND_API_KEY`, `CONTACT_TO_EMAIL`, `CONTACT_FROM_EMAIL`.
-
-Never add `STORYBLOK_MANAGEMENT_TOKEN` to Vercel — it's only for the local scripts and the GitHub Action.
-
-## Scripts
-
-| Command                   | What it does                                |
-| ------------------------- | ------------------------------------------- |
-| `npm run dev`             | Dev server over HTTPS                       |
-| `npm run build` / `start` | Production build / server                   |
-| `npm run lint`            | ESLint (Next.js config)                     |
-| `npm run format`          | Prettier                                    |
-| `npm run storyblok:setup` | Push components + placeholder content       |
-| `npm run blog:push`       | Create Storyblok drafts from `content/blog` |
+Add `STORYBLOK_DELIVERY_API_TOKEN` (and `STORYBLOK_REGION` if your space isn't in the EU) under Project → Settings → Environment Variables. Pushing to `main` deploys the site.

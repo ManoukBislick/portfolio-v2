@@ -1,10 +1,10 @@
 import { cn } from '@/lib/utils';
-import { Container, SbImage } from '@/components/atoms';
+import { Container, Picture } from '@/components/atoms';
 import ImageReveal from '@/components/animations/ImageReveal';
 
 /** A relaxed, two-column image gallery where every third image goes wide. */
 export default function Gallery({ images = [], className }) {
-	const list = images.filter((image) => image?.filename);
+	const list = images.filter((image) => image?.src);
 	if (!list.length) return null;
 
 	return (
@@ -13,18 +13,15 @@ export default function Gallery({ images = [], className }) {
 				{list.map((image, index) => {
 					const wide = index % 3 === 0;
 					return (
-						<figure
-							key={image.id ?? image.filename}
-							className={cn(wide && 'sm:col-span-2')}
-						>
+						<figure key={image.src} className={cn(wide && 'sm:col-span-2')}>
 							<ImageReveal
 								className={cn(
-									'rounded-[2rem] bg-sage-100',
+									'rounded-lg bg-sage-100',
 									wide ? 'aspect-[16/9]' : 'aspect-[4/5]',
 								)}
 							>
 								<div className="relative size-full">
-									<SbImage
+									<Picture
 										image={image}
 										fill
 										sizes={
@@ -35,9 +32,9 @@ export default function Gallery({ images = [], className }) {
 									/>
 								</div>
 							</ImageReveal>
-							{image.title ? (
+							{image.caption ? (
 								<figcaption className="mt-3 text-sm text-sage-600">
-									{image.title}
+									{image.caption}
 								</figcaption>
 							) : null}
 						</figure>

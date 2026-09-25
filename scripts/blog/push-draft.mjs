@@ -1,107 +1,106 @@
 #!/usr/bin/env node
 /**
- * Creates Storyblok draft stories from the Markdown articles in content/blog.
+ * Puts blog drafts from the drafts/ folder into Storyblok as unpublished articles.
  *
- *   npm run blog:push                          every article that isn't in Storyblok yet
- *   npm run blog:push -- content/blog/x.md     only these files
- *   npm run blog:push -- --update              also overwrite drafts that already exist
- *   npm run blog:push -- --dry-run             show what would happen
+ *   npm run blog:push                              every draft that isn't in Storyblok yet
+ *   npm run blog:push -- drafts/2026-10-my-post.md  one specific draft
+ *   npm run blog:push -- --force                   also overwrite articles that already exist
  *
- * Articles are always saved as drafts: you review and publish them in Storyblok.
- * Requires STORYBLOK_MANAGEMENT_TOKEN and STORYBLOK_SPACE_ID (in .env.local or the environment).
+ * A draft is a Markdown file with a short header, see drafts/README.md.
+ * Nothing is published: you read the article in Storyblok and press Publish yourself.
  */
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
+import { markdownToStoryblokRichtext } from '@storyblok/richtext/markdown-parser';
 import { createClient, ensureFolder, findStory } from '../storyblok/mapi.mjs';
-import { getLocalArticles } from '../../src/lib/local-articles.js';
 
-const argv = process.argv.slice(2);
-const flags = new Set(argv.filter((arg) => arg.startsWith('--')));
-const files = argv
-	.filter((arg) => !arg.startsWith('--'))
-	.map((file) => path.basename(file, '.md'));
-const DRY = flags.has('--dry-run');
-const UPDATE = flags.has('--update');
+const DRAFTS = 'drafts';
+const args = process.argv.slice(2);
+const FORCE = args.includes('--force');
+const files = args.filter((arg) => !arg.startsWith('--'));
+
+/** Split a draft into its header fields and the Markdown body. */
+function parseDraft(source) {
+	const match = source.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/);
+	if (!match) return { fields: {}, body: source.trim() };
+	const fields = {};
+	for (const line of match[1].split(/\r?\n/)) {
+		const pair = line.match(/^([a-z_]+):\s*(.*)$/i);
+		if (!pair) continue;
+		let value = pair[2].trim();
+		if (/^\[.*\]$/.test(value)) value = value.slice(1, -1);
+		fields[pair[1]] = value.replace(/^["']|["']$/g, '');
+	}
+	return { fields, body: match[2].trim() };
+}
+
+function draftFiles() {
+	if (files.length) return files;
+	if (!existsSync(DRAFTS)) return [];
+	return readdirSync(DRAFTS)
+		.filter((file) => /^\d{4}-\d{2}-.+\.md$/.test(file))
+		.sort()
+		.map((file) => path.join(DRAFTS, file));
+}
 
 async function main() {
-	const all = await getLocalArticles();
-	const selected = files.length
-		? all.filter((article) =>
-				files.some(
-					(file) => file.endsWith(article.slug) || file === article.slug,
-				),
-			)
-		: all;
-
-	if (!selected.length) {
-		console.log(
-			'No articles found in content/blog (files must be named YYYY-MM-slug.md).',
-		);
+	const list = draftFiles();
+	if (!list.length) {
+		console.log('No drafts found in drafts/.');
 		return;
 	}
 
 	const client = createClient();
-	const folder = DRY
-		? { id: 0 }
-		: await ensureFolder(client, {
-				name: 'Blog',
-				slug: 'blog',
-				defaultRoot: 'article',
-			});
-	const created = [];
+	const folder = await ensureFolder(client, {
+		name: 'Blog',
+		slug: 'blog',
+		defaultRoot: 'article',
+	});
 
-	for (const article of selected) {
-		const existing = await findStory(client, article.full_slug);
-		if (existing && !UPDATE) {
-			console.log(
-				`· ${article.full_slug} already exists — skipped (use --update to overwrite the draft)`,
-			);
+	for (const file of list) {
+		const { fields, body } = parseDraft(readFileSync(file, 'utf8'));
+		const slug =
+			fields.slug || path.basename(file, '.md').replace(/^\d{4}-\d{2}-/, '');
+		const title = fields.title || slug;
+		const date = fields.date || path.basename(file).slice(0, 7) + '-01';
+
+		const existing = await findStory(client, `blog/${slug}`);
+		if (existing && !FORCE) {
+			console.log(`skipped ${file}: blog/${slug} is already in Storyblok`);
 			continue;
 		}
-		const content = { ...article.content, _uid: randomUUID() };
-		if (content.cover?.filename)
-			content.cover = {
-				id: null,
-				alt: '',
-				name: '',
-				focus: '',
-				title: '',
-				copyright: '',
-				fieldtype: 'asset',
-				...content.cover,
-			};
+
 		const story = {
-			name: article.name,
-			slug: article.slug,
+			name: title,
+			slug,
 			parent_id: folder.id,
-			content,
+			content: {
+				_uid: randomUUID(),
+				component: 'article',
+				title,
+				date: `${date} 00:00`,
+				excerpt: fields.excerpt || '',
+				tags: fields.tags || '',
+				seo_description: fields.seo_description || fields.excerpt || '',
+				body: markdownToStoryblokRichtext(body),
+			},
 		};
 
-		if (DRY) {
-			console.log(
-				`${existing ? '~ update' : '+ create'} ${article.full_slug} (draft)`,
-			);
-			continue;
-		}
-		const result = existing
+		const { story: saved } = existing
 			? await client.put(`/stories/${existing.id}`, {
 					story: { ...story, id: existing.id },
 				})
 			: await client.post('/stories', { story });
-		created.push(result.story);
-		console.log(
-			`✓ ${existing ? 'updated' : 'created'} draft ${article.full_slug}`,
-		);
-	}
 
-	for (const story of created) {
+		console.log(`${existing ? 'updated' : 'added'} "${title}" as a draft`);
 		console.log(
-			`  → review: https://app.storyblok.com/#/me/spaces/${client.spaceId}/stories/0/0/${story.id}`,
+			`  https://app.storyblok.com/#/me/spaces/${client.spaceId}/stories/0/0/${saved.id}`,
 		);
 	}
 }
 
 main().catch((error) => {
-	console.error(`\n✖ ${error.message}\n`);
+	console.error(`\nSomething went wrong: ${error.message}\n`);
 	process.exit(1);
 });

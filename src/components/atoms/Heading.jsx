@@ -12,7 +12,7 @@ const sizes = {
 
 /**
  * Turns `*word*` into an italic serif accent, so editors can add
- * emphasis in plain Storyblok text fields: "I build *calm* websites".
+ * emphasis in plain text: "I build *calm* websites".
  */
 export function withAccents(text, accentClassName = 'text-sage-600') {
 	if (typeof text !== 'string') return text;

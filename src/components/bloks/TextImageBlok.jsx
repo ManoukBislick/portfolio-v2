@@ -1,17 +1,14 @@
 import { storyblokEditable } from '@storyblok/react/rsc';
-import { RichText, TextImage } from '@/components/organisms';
+import { toImage } from '@/lib/utils';
+import { TextImage } from '@/components/organisms';
+import RichText from './RichText';
 
 export default function TextImageBlok({ blok }) {
 	return (
 		<TextImage
 			attrs={storyblokEditable(blok)}
-			eyebrow={blok.eyebrow}
 			title={blok.title}
-			image={
-				blok.image?.filename
-					? blok.image
-					: { filename: '/images/placeholders/portrait-2.svg', alt: '' }
-			}
+			image={toImage(blok.image)}
 			caption={blok.caption}
 			reverse={Boolean(blok.reverse)}
 			body={<RichText document={blok.body} />}

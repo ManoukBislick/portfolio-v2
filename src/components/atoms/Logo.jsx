@@ -8,15 +8,11 @@ export default function Logo({ className, onClick }) {
 			href="/"
 			onClick={onClick}
 			className={cn(
-				'group inline-flex items-baseline font-serif text-2xl tracking-tight',
+				'font-serif text-xl tracking-tight text-sage-950 sm:text-2xl',
 				className,
 			)}
-			aria-label={`${site.name} — home`}
 		>
-			<span>{site.shortName}</span>
-			<em className="text-sage-500 transition-transform duration-700 ease-[var(--ease-calm)] group-hover:-translate-y-1">
-				.
-			</em>
+			{site.name}
 		</Link>
 	);
 }
