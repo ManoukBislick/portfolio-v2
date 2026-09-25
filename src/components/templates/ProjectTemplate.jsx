@@ -9,6 +9,7 @@ import {
 import { MetaList } from '@/components/molecules';
 import { Gallery } from '@/components/organisms';
 import Reveal from '@/components/animations/Reveal';
+import SplitReveal from '@/components/animations/SplitReveal';
 import ImageReveal from '@/components/animations/ImageReveal';
 
 /**
@@ -40,10 +41,16 @@ export default function ProjectTemplate({ project, body, next, attrs }) {
 							← All projects
 						</Link>
 					</Reveal>
-					<Reveal onLoad delay={0.05} className="flex max-w-3xl flex-col gap-5">
-						<h1 className="text-title">{withAccents(title)}</h1>
-						{summary ? <Text size="lead">{summary}</Text> : null}
-					</Reveal>
+					<div className="flex max-w-3xl flex-col gap-5">
+						<SplitReveal as="h1" onLoad delay={0.05} className="text-title">
+							{withAccents(title)}
+						</SplitReveal>
+						{summary ? (
+							<Reveal onLoad delay={0.35}>
+								<Text size="lead">{summary}</Text>
+							</Reveal>
+						) : null}
+					</div>
 				</Container>
 			</header>
 
@@ -106,7 +113,10 @@ export default function ProjectTemplate({ project, body, next, attrs }) {
 								{next.title}
 							</p>
 						</div>
-						<span aria-hidden="true" className="text-2xl text-sage-600">
+						<span
+							aria-hidden="true"
+							className="text-2xl text-sage-600 transition-transform duration-500 ease-[var(--ease-calm)] group-hover:translate-x-2"
+						>
 							→
 						</span>
 					</Link>

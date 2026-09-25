@@ -32,8 +32,14 @@ export default function ArticleCard({
 					) : null}
 				</p>
 				<div className="flex flex-col gap-1.5">
-					<h3 className="text-2xl leading-snug decoration-sage-300 underline-offset-4 group-hover:underline">
-						{title}
+					<h3 className="flex items-baseline justify-between gap-6 text-2xl leading-snug transition-colors duration-500 group-hover:text-sage-700">
+						<span>{title}</span>
+						<span
+							aria-hidden="true"
+							className="shrink-0 -translate-x-3 text-xl text-sage-600 opacity-0 transition-all duration-500 ease-[var(--ease-calm)] group-hover:translate-x-0 group-hover:opacity-100"
+						>
+							→
+						</span>
 					</h3>
 					{excerpt ? (
 						<p className="max-w-2xl text-sm leading-relaxed text-sage-700">

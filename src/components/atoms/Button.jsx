@@ -3,13 +3,16 @@ import { cn, isExternal } from '@/lib/utils';
 
 const variants = {
 	primary:
-		'inline-flex items-center gap-2 rounded-md bg-sage-800 px-5 py-3 text-sm font-medium text-cream-50 transition-colors duration-300 hover:bg-sage-950',
+		'group inline-flex items-center gap-2 rounded-md bg-sage-800 px-5 py-3 text-sm font-medium text-cream-50 transition-colors duration-300 hover:bg-sage-950',
 	secondary:
-		'inline-flex items-center gap-2 rounded-md border border-sage-900/20 px-5 py-3 text-sm font-medium text-sage-900 transition-colors duration-300 hover:border-sage-900/50 hover:bg-sage-50',
-	link: 'inline-flex items-center gap-1.5 text-sm font-medium text-sage-900 underline decoration-sage-300 underline-offset-[6px] transition-colors duration-300 hover:decoration-sage-800',
+		'group inline-flex items-center gap-2 rounded-md border border-sage-900/20 px-5 py-3 text-sm font-medium text-sage-900 transition-colors duration-300 hover:border-sage-900/50 hover:bg-sage-50',
+	link: 'group inline-flex items-center gap-1.5 text-sm font-medium text-sage-900 underline decoration-sage-300 underline-offset-[6px] transition-colors duration-300 hover:decoration-sage-800',
 };
 
-/** Links and buttons in three flavours: a solid button, an outlined one and a text link. */
+/**
+ * Links and buttons in three flavours: a solid button, an outlined one and a text link.
+ * The button itself stays put on hover; only the colour changes and the arrow nudges.
+ */
 export default function Button({
 	href,
 	variant = 'primary',
@@ -22,7 +25,14 @@ export default function Button({
 	const content = (
 		<>
 			{children}
-			{arrow ? <span aria-hidden="true">→</span> : null}
+			{arrow ? (
+				<span
+					aria-hidden="true"
+					className="transition-transform duration-500 ease-[var(--ease-calm)] group-hover:translate-x-1"
+				>
+					→
+				</span>
+			) : null}
 		</>
 	);
 

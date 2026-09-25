@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { site } from '@/lib/site';
 import { Container, Picture, Text, withAccents } from '@/components/atoms';
 import Reveal from '@/components/animations/Reveal';
+import SplitReveal from '@/components/animations/SplitReveal';
 import ImageReveal from '@/components/animations/ImageReveal';
 
 function Pager({ label, article, align = 'left' }) {
@@ -53,22 +54,28 @@ export default function ArticleTemplate({
 							← All articles
 						</Link>
 					</Reveal>
-					<Reveal onLoad delay={0.05} className="flex flex-col gap-5">
-						<p className="text-sm text-sage-600">
-							{draft ? (
-								<span className="mr-2 rounded bg-blush-200 px-1.5 py-0.5 text-xs text-sage-900">
-									Not published yet
-								</span>
+					<div className="flex flex-col gap-5">
+						<Reveal onLoad delay={0.05}>
+							<p className="text-sm text-sage-600">
+								{draft ? (
+									<span className="mr-2 rounded bg-blush-200 px-1.5 py-0.5 text-xs text-sage-900">
+										Not published yet
+									</span>
+								) : null}
+								{date ? <time dateTime={dateISO}>{date}</time> : null}
+								{readingTime ? <span> · {readingTime} min read</span> : null}
+							</p>
+						</Reveal>
+						<SplitReveal as="h1" onLoad delay={0.1} className="text-title">
+							{withAccents(title)}
+						</SplitReveal>
+						<Reveal onLoad delay={0.4} className="flex flex-col gap-5">
+							{excerpt ? <Text size="lead">{excerpt}</Text> : null}
+							{tags.length ? (
+								<p className="text-sm text-sage-600">{tags.join(' · ')}</p>
 							) : null}
-							{date ? <time dateTime={dateISO}>{date}</time> : null}
-							{readingTime ? <span> · {readingTime} min read</span> : null}
-						</p>
-						<h1 className="text-title">{withAccents(title)}</h1>
-						{excerpt ? <Text size="lead">{excerpt}</Text> : null}
-						{tags.length ? (
-							<p className="text-sm text-sage-600">{tags.join(' · ')}</p>
-						) : null}
-					</Reveal>
+						</Reveal>
+					</div>
 				</Container>
 			</header>
 

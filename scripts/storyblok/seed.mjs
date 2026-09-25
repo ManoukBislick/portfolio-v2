@@ -51,6 +51,7 @@ export const home = {
 			images: [
 				image('portrait-1.svg', 'Portrait of Manouk'),
 				image('portrait-2.svg', 'Manouk at work'),
+				image('portrait-3.svg', 'Manouk outside'),
 			],
 			buttons: [
 				{

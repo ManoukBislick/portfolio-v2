@@ -10,15 +10,112 @@ import Reveal from '@/components/animations/Reveal';
 import SplitReveal from '@/components/animations/SplitReveal';
 import ImageReveal from '@/components/animations/ImageReveal';
 import Parallax from '@/components/animations/Parallax';
+import Float from '@/components/animations/Float';
 import BotanicalLine from '@/components/animations/BotanicalLine';
 
 const PLACEHOLDERS = [
 	{ src: '/images/placeholders/portrait-1.svg', alt: 'Portrait placeholder' },
 	{ src: '/images/placeholders/portrait-2.svg', alt: 'Portrait placeholder' },
+	{ src: '/images/placeholders/portrait-3.svg', alt: 'Portrait placeholder' },
 ];
 
+const softShadow = 'shadow-[0_28px_56px_-36px_rgba(22,32,25,0.5)]';
+
 /**
- * Homepage intro: who I am on the left, two photos on the right.
+ * Up to three photos: a large arch that drifts with the scroll and two smaller
+ * ones that float slowly. Without photos the placeholders fill all three spots.
+ */
+function HeroPhotos({ images = [] }) {
+	const photos = images.filter((image) => image?.src);
+	const [main, round, small] = photos.length ? photos : PLACEHOLDERS;
+
+	return (
+		<div className="relative mx-auto aspect-[5/6] w-full max-w-md">
+			<span
+				aria-hidden="true"
+				className="absolute inset-[14%] rounded-full bg-sage-200/60 blur-3xl"
+			/>
+
+			<BotanicalLine
+				onLoad
+				delay={0.9}
+				className="pointer-events-none absolute top-[24%] -left-[2%] h-[56%] w-auto sm:-left-[12%]"
+			/>
+
+			<Parallax speed={8} className="absolute top-0 right-0 w-[72%]">
+				<ImageReveal
+					onLoad
+					delay={0.15}
+					className="rounded-arch aspect-[3/4] bg-sage-100"
+				>
+					<div className="relative size-full">
+						<Picture
+							image={main}
+							fill
+							priority
+							sizes="(min-width: 768px) 22rem, 72vw"
+						/>
+					</div>
+				</ImageReveal>
+			</Parallax>
+
+			{round ? (
+				<Float
+					amount={10}
+					duration={5}
+					className="absolute bottom-[8%] left-[2%] w-[42%]"
+				>
+					<ImageReveal
+						onLoad
+						delay={0.5}
+						className={cn(
+							'aspect-square rounded-full border-4 border-cream-50 bg-blush-100',
+							softShadow,
+						)}
+					>
+						<div className="relative size-full">
+							<Picture
+								image={round}
+								fill
+								sizes="(min-width: 768px) 12rem, 42vw"
+							/>
+						</div>
+					</ImageReveal>
+				</Float>
+			) : null}
+
+			{small ? (
+				<Float
+					amount={14}
+					duration={6}
+					delay={0.8}
+					rotate={-2}
+					className="absolute right-[4%] -bottom-[2%] w-[30%]"
+				>
+					<ImageReveal
+						onLoad
+						delay={0.75}
+						className={cn(
+							'aspect-[4/5] rounded-lg border-4 border-cream-50 bg-sage-100',
+							softShadow,
+						)}
+					>
+						<div className="relative size-full">
+							<Picture
+								image={small}
+								fill
+								sizes="(min-width: 768px) 9rem, 30vw"
+							/>
+						</div>
+					</ImageReveal>
+				</Float>
+			) : null}
+		</div>
+	);
+}
+
+/**
+ * Homepage intro: who I am on the left, the photos on the right.
  * `actions` is a list of buttons: { label, href, variant: 'primary' | 'secondary' | 'link' }.
  */
 export default function Hero({
@@ -29,9 +126,6 @@ export default function Hero({
 	attrs,
 	className,
 }) {
-	const [main, second] = [0, 1].map((i) =>
-		images[i]?.src ? images[i] : PLACEHOLDERS[i],
-	);
 	const links = actions.filter((action) => action?.href && action?.label);
 
 	return (
@@ -39,8 +133,8 @@ export default function Hero({
 			className={cn('pt-6 pb-20 sm:pt-12 sm:pb-28', className)}
 			{...attrs}
 		>
-			<Container className="grid items-center gap-14 md:grid-cols-[1.15fr_1fr] md:gap-12">
-				<div className="flex flex-col items-start gap-7">
+			<Container className="grid items-center gap-16 md:grid-cols-[1.1fr_1fr] md:gap-12">
+				<div className="relative z-10 flex flex-col items-start gap-7">
 					<SplitReveal as="h1" onLoad className="text-display">
 						{withAccents(headline)}
 					</SplitReveal>
@@ -74,44 +168,7 @@ export default function Hero({
 					) : null}
 				</div>
 
-				<div className="relative mx-auto w-full max-w-md pb-10 md:pb-16">
-					<Parallax speed={6} className="ml-auto w-[82%]">
-						<ImageReveal
-							onLoad
-							delay={0.15}
-							className="rounded-arch aspect-[4/5] bg-sage-100"
-						>
-							<div className="relative size-full">
-								<Picture
-									image={main}
-									fill
-									priority
-									sizes="(min-width: 768px) 24rem, 80vw"
-								/>
-							</div>
-						</ImageReveal>
-					</Parallax>
-
-					<ImageReveal
-						onLoad
-						delay={0.5}
-						className="absolute bottom-0 left-0 aspect-square w-[42%] rounded-md border-4 border-cream-50 bg-blush-100"
-					>
-						<div className="relative size-full">
-							<Picture
-								image={second}
-								fill
-								sizes="(min-width: 768px) 12rem, 40vw"
-							/>
-						</div>
-					</ImageReveal>
-
-					<BotanicalLine
-						onLoad
-						delay={0.8}
-						className="pointer-events-none absolute top-[10%] left-0 h-44 w-auto sm:h-52"
-					/>
-				</div>
+				<HeroPhotos images={images} />
 			</Container>
 		</section>
 	);

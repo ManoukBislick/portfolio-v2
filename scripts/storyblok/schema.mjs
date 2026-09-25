@@ -172,7 +172,8 @@ export const components = [
 			headline: text('Headline', { required: true, description: ACCENT }),
 			intro: textarea('Intro'),
 			images: images('Photos', {
-				description: 'Two photos: a large one and a small one.',
+				description:
+					'Up to three photos: a large one and two small ones that float next to it.',
 			}),
 			buttons: bloks('Buttons', ['button'], { maximum: 2 }),
 		}),
