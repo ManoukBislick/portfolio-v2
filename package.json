@@ -25,7 +25,7 @@
 		"@storyblok/richtext": "^5.3.2",
 		"@tailwindcss/postcss": "^4.3.3",
 		"@tailwindcss/typography": "^0.5.20",
-		"eslint": "^9.39.5",
+		"eslint": "^10.11.0",
 		"eslint-config-next": "^16.3.5",
 		"prettier": "^3.9.9",
 		"tailwindcss": "^4.3.3"
