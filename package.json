@@ -22,7 +22,7 @@
 		"react-dom": "^19.3.0"
 	},
 	"devDependencies": {
-		"@storyblok/richtext": "^5.3.2",
+		"@storyblok/richtext": "^5.3.3",
 		"@tailwindcss/postcss": "^4.3.3",
 		"@tailwindcss/typography": "^0.5.20",
 		"eslint": "^9.39.5",
