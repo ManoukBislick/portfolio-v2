@@ -1,5 +1,6 @@
 // Molecules: small groups of atoms with a single job.
 export { default as ArticleCard } from './ArticleCard';
+export { default as Lightbox } from './Lightbox';
 export { default as MetaList } from './MetaList';
 export { default as NavLink } from './NavLink';
 export { default as ProjectCard } from './ProjectCard';
