@@ -22,12 +22,13 @@ const PLACEHOLDERS = [
 const softShadow = 'shadow-[0_28px_56px_-36px_rgba(22,32,25,0.5)]';
 
 /**
- * Up to three photos: a large arch that drifts with the scroll and two smaller
- * ones that float slowly. Without photos the placeholders fill all three spots.
+ * Renders the first and third photo: a large arch that drifts with the scroll
+ * and a small one that floats slowly (the second photo, if any, is unused).
+ * Without photos the placeholders fill both spots.
  */
 function HeroPhotos({ images = [] }) {
 	const photos = images.filter((image) => image?.src);
-	const [main, round, small] = photos.length ? photos : PLACEHOLDERS;
+	const [main, , small] = photos.length ? photos : PLACEHOLDERS;
 
 	return (
 		<div className="relative mx-auto aspect-[5/6] w-full max-w-md">
@@ -58,31 +59,6 @@ function HeroPhotos({ images = [] }) {
 					</div>
 				</ImageReveal>
 			</Parallax>
-
-			{round ? (
-				<Float
-					amount={10}
-					duration={5}
-					className="absolute bottom-[8%] left-[2%] w-[42%]"
-				>
-					<ImageReveal
-						onLoad
-						delay={0.5}
-						className={cn(
-							'aspect-square rounded-full border-4 border-cream-50 bg-blush-100',
-							softShadow,
-						)}
-					>
-						<div className="relative size-full">
-							<Picture
-								image={round}
-								fill
-								sizes="(min-width: 768px) 12rem, 42vw"
-							/>
-						</div>
-					</ImageReveal>
-				</Float>
-			) : null}
 
 			{small ? (
 				<Float

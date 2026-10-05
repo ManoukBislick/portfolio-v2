@@ -18,8 +18,13 @@ export const site = {
 		{ label: 'Blog', href: '/blog' },
 	],
 	// Shown in the footer. Replace the LinkedIn URL with your own profile, or remove it.
+	// `icon` matches a key in the SocialIcon atom (src/components/atoms/SocialIcon.jsx).
 	socials: [
-		{ label: 'GitHub', href: 'https://github.com/ManoukBislick' },
-		{ label: 'LinkedIn', href: 'https://www.linkedin.com/' },
+		{
+			label: 'GitHub',
+			href: 'https://github.com/ManoukBislick',
+			icon: 'github',
+		},
+		{ label: 'LinkedIn', href: 'https://www.linkedin.com/', icon: 'linkedin' },
 	],
 };

@@ -5,10 +5,18 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SplitText } from 'gsap/SplitText';
 import { DrawSVGPlugin } from 'gsap/DrawSVGPlugin';
 import { Flip } from 'gsap/Flip';
+import { Draggable } from 'gsap/Draggable';
 import { useGSAP } from '@gsap/react';
 
 if (typeof window !== 'undefined') {
-	gsap.registerPlugin(ScrollTrigger, SplitText, DrawSVGPlugin, Flip, useGSAP);
+	gsap.registerPlugin(
+		ScrollTrigger,
+		SplitText,
+		DrawSVGPlugin,
+		Flip,
+		Draggable,
+		useGSAP,
+	);
 	gsap.defaults({ ease: 'power3.out', duration: 1.1 });
 }
 
@@ -30,4 +38,12 @@ export function show(targets) {
 	gsap.set(targets, { autoAlpha: 1, clearProps: 'transform' });
 }
 
-export { gsap, ScrollTrigger, SplitText, DrawSVGPlugin, Flip, useGSAP };
+export {
+	gsap,
+	ScrollTrigger,
+	SplitText,
+	DrawSVGPlugin,
+	Flip,
+	Draggable,
+	useGSAP,
+};

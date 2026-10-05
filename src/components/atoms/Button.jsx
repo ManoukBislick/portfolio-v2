@@ -6,7 +6,7 @@ const variants = {
 		'group inline-flex items-center gap-2 rounded-md bg-sage-800 px-5 py-3 text-sm font-medium text-cream-50 transition-colors duration-300 hover:bg-sage-950',
 	secondary:
 		'group inline-flex items-center gap-2 rounded-md border border-sage-900/20 px-5 py-3 text-sm font-medium text-sage-900 transition-colors duration-300 hover:border-sage-900/50 hover:bg-sage-50',
-	link: 'group inline-flex items-center gap-1.5 text-sm font-medium text-sage-900 underline decoration-sage-300 underline-offset-[6px] transition-colors duration-300 hover:decoration-sage-800',
+	link: 'group inline-flex items-center gap-1.5 text-sm font-medium text-sage-900 decoration-sage-300 underline-offset-[6px] transition-colors duration-300 hover:decoration-sage-800',
 };
 
 /**

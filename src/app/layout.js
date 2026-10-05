@@ -1,6 +1,7 @@
 import localFont from 'next/font/local';
 import './globals.css';
 import { site } from '@/lib/site';
+import { InlineScript } from '@/components/atoms';
 import SiteHeader from '@/components/organisms/SiteHeader';
 import SiteFooter from '@/components/organisms/SiteFooter';
 
@@ -80,7 +81,7 @@ export default function RootLayout({ children }) {
 			suppressHydrationWarning
 		>
 			<head>
-				<script dangerouslySetInnerHTML={{ __html: motionGuard }} />
+				<InlineScript html={motionGuard} />
 			</head>
 			<body className="min-h-dvh overflow-x-clip">
 				<SiteHeader />
