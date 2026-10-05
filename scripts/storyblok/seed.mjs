@@ -208,7 +208,7 @@ export const projectsPage = {
 			title: 'Projects',
 			intro: 'Websites, experiments and side projects I’ve worked on.',
 		},
-		{ component: 'project_grid', show_filter: true },
+		{ component: 'project_grid' },
 	],
 	seo_title: 'Projects',
 	seo_description: 'Websites, experiments and side projects by Manouk Bislick.',

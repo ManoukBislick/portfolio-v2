@@ -10,7 +10,7 @@ const fallback = {
 		component: 'page',
 		body: [
 			{ _uid: 'projects-intro', component: 'page_hero', title: 'Projects' },
-			{ _uid: 'projects-grid', component: 'project_grid', show_filter: true },
+			{ _uid: 'projects-grid', component: 'project_grid' },
 		],
 	},
 };

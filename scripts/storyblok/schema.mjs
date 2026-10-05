@@ -301,9 +301,7 @@ export const components = [
 		is_nestable: true,
 		group: 'sections',
 		icon: 'block-image',
-		schema: schema({
-			show_filter: bool('Show tag filter', { default_value: true }),
-		}),
+		schema: schema({}),
 	},
 	{
 		name: 'article_list',
